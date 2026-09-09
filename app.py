@@ -47,6 +47,7 @@ HTML_TEMPLATE = """
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 4px 15px rgba(242, 132, 158, 0.1);
         }
 
         .logo {
@@ -54,6 +55,25 @@ HTML_TEMPLATE = """
             font-size: 26px;
             font-weight: 600;
             letter-spacing: 2px;
+            color: var(--primary-dark);
+            text-decoration: none;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
             color: var(--primary-dark);
         }
 
@@ -64,6 +84,7 @@ HTML_TEMPLATE = """
             text-align: center;
             padding: 90px 20px 60px;
             animation: fadeInDown 1s ease-out;
+            margin-bottom: 40px;
         }
 
         .hero h1 {
@@ -248,17 +269,25 @@ HTML_TEMPLATE = """
 <body>
 
     <header>
-        <div class="logo">BLUSH & GLOW</div>
+        <a href="#home" class="logo">BLUSH & GLOW</a>
+        <nav>
+            <ul>
+                <li><a href="#home">Главная</a></li>
+                <li><a href="#services">Услуги</a></li>
+                <li><a href="#about">О нас</a></li>
+                <li><a href="#contact">Контакты</a></li>
+            </ul>
+        </nav>
         <button class="btn" style="padding: 10px 24px; font-size: 13px;" onclick="openModal('Общая запись')">Записаться</button>
     </header>
 
-    <section class="hero">
+    <section class="hero" id="home">
         <h1>Эстетика ваших рук и ног</h1>
         <p>Идеальное покрытие, премиальные спа-ритуалы и бережный уход в атмосфере легкости и вдохновения.</p>
         <button class="btn" onclick="openModal('Первый визит')">Выбрать время</button>
     </section>
 
-    <div class="container">
+    <div class="container" id="services">
         <h2 class="section-title">Меню услуг</h2>
         <div class="services-grid">
             <div class="card">
@@ -281,8 +310,55 @@ HTML_TEMPLATE = """
                 <span class="price">2 100 ₽</span>
                 <button class="card-btn" onclick="openModal('Японский маникюр')">Записаться</button>
             </div>
+
+            <div class="card">
+                <h3>Экспресс-маникюр</h3>
+                <p>Быстрый уход для поддержания красоты рук: придание формы, обработка кутикулы и легкий массаж.</p>
+                <span class="price">1 500 ₽</span>
+                <button class="card-btn" onclick="openModal('Экспресс-маникюр')">Записаться</button>
+            </div>
+
+            <div class="card">
+                <h3>Наращивание ногтей</h3>
+                <p>Создание идеальной длины и формы с использованием современных материалов и техник.</p>
+                <span class="price">от 3 500 ₽</span>
+                <button class="card-btn" onclick="openModal('Наращивание ногтей')">Записаться</button>
+            </div>
+
+            <div class="card">
+                <h3>Дизайн любой сложности</h3>
+                <p>Воплощение ваших идей в уникальных рисунках, градиентах и акцентах на ваших ногтях.</p>
+                <span class="price">от 500 ₽</span>
+                <button class="card-btn" onclick="openModal('Дизайн ногтей')">Записаться</button>
+            </div>
         </div>
     </div>
+
+    <section class="container" id="about">
+        <h2 class="section-title">О нас</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 40px; font-size: 16px; color: var(--text-muted);">
+            BLUSH & GLOW — это больше, чем просто студия эстетики ногтей. Это место, где красота встречается с заботой.
+            Мы верим, что каждая женщина заслуживает идеального ухода, поэтому используем только премиальные материалы,
+            передовые техники и создаем атмосферу, в которой вы можете расслабиться и почувствовать себя особенной.
+            Наши мастера — это настоящие художники, готовые воплотить в жизнь любую вашу идею, будь то классический маникюр
+            или смелый авторский дизайн. Приходите и убедитесь сами!
+        </p>
+    </section>
+
+    <section class="container" id="contact">
+        <h2 class="section-title">Контакты</h2>
+        <div style="text-align: center; font-size: 16px; line-height: 1.8;">
+            <p><strong>Адрес:</strong> г. Москва, ул. Красоты, д. 10, офис 3</p>
+            <p><strong>Телефон:</strong> <a href="tel:+74951234567" style="color: var(--primary-dark); text-decoration: none;">+7 (495) 123-45-67</a></p>
+            <p><strong>Email:</strong> <a href="mailto:info@blushandglow.ru" style="color: var(--primary-dark); text-decoration: none;">info@blushandglow.ru</a></p>
+            <p style="margin-top: 20px;">Мы работаем для вас ежедневно с 10:00 до 21:00.</p>
+        </div>
+    </section>
+
+    <footer style="background: var(--primary-dark); color: white; text-align: center; padding: 30px 20px; margin-top: 60px;">
+        <p>&copy; 2026 BLUSH & GLOW. Все права защищены.</p>
+        <p style="font-size: 14px; margin-top: 10px;">С любовью к вашим рукам и ногам.</p>
+    </footer>
 
     <!-- Модальное окно записи -->
     <div class="modal" id="bookingModal">
@@ -316,11 +392,22 @@ HTML_TEMPLATE = """
             }
         }
 
+        // Плавная прокрутка для навигации
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
         function submitBooking() {
             const name = document.getElementById('clientName').value;
             const phone = document.getElementById('clientPhone').value;
 
-            if(!name || !phone) {
+            if (!name || !phone) {
                 alert('Пожалуйста, заполните имя и телефон.');
                 return;
             }
