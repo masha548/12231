@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление вишлистом</title>
+    <style>
+        body { font-family: sans-serif; background: #fafafa; padding: 40px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        input[type="password"] { padding: 10px; width: 250px; border: 1px solid #ccc; border-radius: 6px; }
+        button { padding: 10px 15px; background: #000; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .reservation { border-bottom: 1px solid #eee; padding: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        .unlock-btn { background: #d9534f; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Админка</h2>
+        {% if error %}<p style="color: red;">{{ error }}</p>{% endif %}
+
+        {% if rows is none %}
+        <form method="post">
+            <input type="password" name="key" placeholder="Секретный пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+        {% else %}
+            <input type="hidden" id="admin-key" value="{{ key }}">
+            
+            {% if rows %}
+                {% for row in rows %}
+                <div class="reservation">
+                    <div>
+                        <strong>Подарок:</strong> {{ row.wish_title }} ({{ row.wish_price }} ₽)<br>
+                        <strong>От кого:</strong> {{ row.guest_name }} ({{ row.contact }})<br>
+                        <span style="font-size: 0.8em; color: #666;">Дата брони: {{ row.created_at }}</span>
+                    </div>
+                    <button class="unlock-btn" onclick="cancelReservation({{ row.id }})">Разблокировать</button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Пока никто ничего не забронировал.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <script>
+        async function cancelReservation(resId) {
+            if (!confirm("Точно вернуть этот подарок в каталог?")) return;
+            const key = document.getElementById('admin-key').value;
+            
+            const res = await fetch(`/api/admin/reservations/${resId}/cancel`, {
+                method: 'POST',
+                headers: { 'X-Admin-Key': key }
+            });
+
+            if (res.ok) {
+                alert("Успешно разблокировано!");
+                location.reload();
+            } else {
+                alert("Ошибка при отмене.");
+            }
+        }
+    </script>
+</body>
+</html>

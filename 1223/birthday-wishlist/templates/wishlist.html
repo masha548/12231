@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог подарков</title>
+    <style>
+        body { font-family: sans-serif; background: #fafafa; padding: 20px; text-align: center; }
+        .controls { max-width: 800px; margin: 0 auto 30px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
+        .filters button { padding: 10px 15px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; }
+        .filters button.active { background: #000; color: white; border-color: #000; }
+        select { padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+        
+        .wishes-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 1000px; margin: 0 auto; }
+        .wish-card { background: white; width: 250px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; transition: 0.2s; }
+        .wish-card img { width: 100%; height: 250px; object-fit: cover; }
+        .wish-card-body { padding: 15px; }
+        .wish-card.reserved { opacity: 0.5; pointer-events: none; }
+        .price { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 10px; }
+        .brand { font-size: 0.8em; color: #888; text-transform: uppercase; }
+        .btn-reserve { display: block; width: 100%; text-align: center; padding: 10px; background: #000; color: white; text-decoration: none; border-radius: 6px; margin-top: 15px; cursor: pointer; border: none; }
+        
+        /* Модальное окно */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 300px; text-align: center; }
+        .modal-content input, .modal-content textarea { width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('home') }}" style="color: #666; text-decoration: none; display: block; margin-bottom: 20px;">← На главную</a>
+    
+    <div class="controls">
+        <div class="filters" id="category-filters">
+            <button class="active" onclick="filterCategory('all', this)">Все</button>
+            <button onclick="filterCategory('beauty', this)">Уход</button>
+            <button onclick="filterCategory('makeup', this)">Макияж</button>
+            <button onclick="filterCategory('hair', this)">Волосы</button>
+            <button onclick="filterCategory('other', this)">Остальное</button>
+        </div>
+        <select id="sort-select" onchange="applyFilters()">
+            <option value="default">Сортировка: по умолчанию</option>
+            <option value="price-asc">Сначала дешевле</option>
+            <option value="price-desc">Сначала дороже</option>
+        </select>
+    </div>
+
+    <div class="wishes-container" id="wishes-container">
+        {% for wish in wishes %}
+        <div class="wish-card {% if wish.status == 'reserved' %}reserved{% endif %}" 
+             data-category="{{ wish.category }}" 
+             data-price="{{ wish.price }}">
+            <img src="{{ wish.image }}" alt="{{ wish.title }}">
+            <div class="wish-card-body">
+                <div class="brand">{{ wish.brand }}</div>
+                <h4>{{ wish.title }} {{ wish.emoji }}</h4>
+                <div class="price">{{ wish.price | rubles }}</div>
+                <div style="font-size: 0.85em; color: #666;">{{ wish.note }}</div>
+                
+                {% if wish.status == 'available' %}
+                <button class="btn-reserve" onclick="openModal({{ wish.id }})">Забронировать</button>
+                {% else %}
+                <button class="btn-reserve" style="background: #ccc;" disabled>Забронировано</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Модальное окно бронирования -->
+    <div id="modal">
+        <div class="modal-content">
+            <h3>Подтвердить бронь</h3>
+            <input type="hidden" id="reserve-id">
+            <input type="text" id="reserve-name" placeholder="Твоё имя" required>
+            <input type="text" id="reserve-contact" placeholder="Твой Telegram или номер">
+            <textarea id="reserve-message" placeholder="Пара слов (необязательно)"></textarea>
+            <button class="btn-reserve" onclick="submitReservation()">Готово!</button>
+            <button style="margin-top:10px; background:none; border:none; color:#888; cursor:pointer;" onclick="document.getElementById('modal').style.display='none'">Отмена</button>
+        </div>
+    </div>
+
+    <script>
+        let currentCategory = 'all';
+
+        function filterCategory(cat, btn) {
+            currentCategory = cat;
+            document.querySelectorAll('#category-filters button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const sortVal = document.getElementById('sort-select').value;
+            const container = document.getElementById('wishes-container');
+            const cards = Array.from(container.querySelectorAll('.wish-card'));
+
+            // Фильтрация
+            cards.forEach(card => {
+                if (currentCategory === 'all' || card.dataset.category === currentCategory) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Сортировка
+            const visibleCards = cards.filter(c => c.style.display !== 'none');
+            visibleCards.sort((a, b) => {
+                const pA = parseInt(a.dataset.price);
+                const pB = parseInt(b.dataset.price);
+                if (sortVal === 'price-asc') return pA - pB;
+                if (sortVal === 'price-desc') return pB - pA;
+                return 0; 
+            });
+
+            visibleCards.forEach(card => container.appendChild(card));
+        }
+
+        function openModal(id) {
+            document.getElementById('reserve-id').value = id;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        async function submitReservation() {
+            const id = document.getElementById('reserve-id').value;
+            const name = document.getElementById('reserve-name').value;
+            const contact = document.getElementById('reserve-contact').value;
+            const message = document.getElementById('reserve-message').value;
+
+            if (!name) { alert('Напиши, пожалуйста, как тебя зовут!'); return; }
+
+            const res = await fetch(`/api/wishes/${id}/reserve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, contact, message })
+            });
+            const data = await res.json();
+            if (data.ok) { window.location.href = data.redirect; } 
+            else { alert(data.error); }
+        }
+    </script>
+</body>
+</html>

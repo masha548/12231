@@ -1,0 +1,33 @@
+<article class="wish-card {% if wish.status == 'reserved' %}is-reserved{% endif %}" data-category="{{ wish.category }}" data-title="{{ wish.title|lower }} {{ wish.brand|lower }}">
+  <div class="wish-image {% if not wish.image %}wish-placeholder{% endif %}">
+    {% if wish.image %}
+      <img src="{{ wish.image }}" alt="{{ wish.title }}" loading="lazy">
+    {% else %}
+      <span aria-hidden="true">{{ wish.emoji }}</span>
+      <small>Фото появится<br>совсем скоро</small>
+    {% endif %}
+    <span class="priority priority-{{ wish.priority|lower|replace(' ', '-') }}">{{ wish.priority }}</span>
+    {% if wish.status == 'reserved' %}<span class="reserved-tag">уже выбрали ♡</span>{% endif %}
+  </div>
+  <div class="wish-body">
+    <p class="wish-brand">{{ wish.brand }}</p>
+    <h3>{{ wish.title }}</h3>
+    <p class="wish-note">{{ wish.note }}</p>
+    <div class="wish-bottom">
+      <strong>{{ wish.price|rubles }}</strong>
+      <span class="availability">{% if wish.status == 'available' %}можно подарить{% else %}занято{% endif %}</span>
+    </div>
+    <div class="wish-actions">
+      {% if wish.link %}
+        <a class="product-link" href="{{ wish.link }}" target="_blank" rel="noopener">Смотреть товар <span>↗</span></a>
+      {% else %}
+        <span class="product-link is-placeholder">Ссылка появится скоро</span>
+      {% endif %}
+      {% if wish.status == 'available' %}
+        <button class="reserve-button" type="button" data-reserve data-id="{{ wish.id }}" data-title="{{ wish.title }}" data-price="{{ wish.price|rubles }}">Забронировать</button>
+      {% else %}
+        <span class="reserve-button disabled">Уже выбрано</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

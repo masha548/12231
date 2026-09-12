@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fce9f0"><meta name="description" content="Виш-лист Маши ко дню рождения">
+  <title>{% block title %}Виш-лист Маши{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div><div class="cursor-flower flower-one" aria-hidden="true">✦</div><div class="cursor-flower flower-two" aria-hidden="true">✿</div>
+  <header class="site-header">
+    <a href="{{ url_for('home') }}" class="logo" aria-label="На главную"><span class="logo-mark">M</span><span>masha’s wishlist</span></a>
+    <button class="menu-toggle" type="button" aria-controls="main-nav" aria-expanded="false"><span></span><span></span><span></span><span class="visually-hidden">Открыть меню</span></button>
+    <nav class="main-nav" id="main-nav" aria-label="Главное меню">
+      <a href="{{ url_for('home') }}" {% if request.endpoint == 'home' %}aria-current="page"{% endif %}>Главная</a>
+      <a href="{{ url_for('wishlist') }}" {% if request.endpoint == 'wishlist' %}aria-current="page"{% endif %}>Виш-лист</a>
+      <a class="nav-cta" href="{{ url_for('wishlist') }}#catalog">Выбрать подарок <span>↗</span></a>
+    </nav>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+  <footer class="site-footer"><div><a href="{{ url_for('home') }}" class="footer-logo">Masha’s wishlist <span>✦</span></a><p>Собрано с любовью к 27 сентября.</p></div><div class="footer-message">Самое важное — увидеться и обняться <span>♡</span></div><div class="footer-links"><a href="{{ url_for('wishlist') }}">Подарки</a><a href="{{ url_for('admin') }}">Для Маши</a></div></footer>
+  <dialog class="reservation-modal" id="reservation-modal" aria-labelledby="modal-title">
+    <button type="button" class="modal-close" data-modal-close aria-label="Закрыть">×</button><div class="modal-petal petal-a" aria-hidden="true"></div><div class="modal-petal petal-b" aria-hidden="true"></div>
+    <p class="eyebrow">Почти готово</p><h2 id="modal-title">Забронировать подарок</h2><p class="modal-product" id="modal-product"></p><p class="modal-copy">Я буду знать, что подарок уже в надёжных руках, а для остальных он станет недоступен.</p>
+    <form id="reservation-form" novalidate><input id="wish-id" type="hidden" name="wish_id"><label>Пожелание для Маши <span>*</span><textarea name="message" maxlength="500" rows="4" placeholder="Напиши пару тёплых слов ♡" required></textarea></label><p class="form-error" id="form-error" role="alert"></p><button class="button button-dark" type="submit"><span>Забронировать</span><b>↗</b></button><p class="form-note">После брони сам подарок нужно заказать по ссылке в карточке.</p></form>
+  </dialog>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

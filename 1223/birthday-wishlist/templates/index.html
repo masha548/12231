@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Wishlist</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #fafafa; padding: 50px 20px; }
+        .hero { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { color: #333; }
+        .btn { display: inline-block; padding: 15px 30px; background: #000; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.2s; }
+        .btn:hover { background: #333; }
+        .hint { margin-top: 30px; font-size: 0.9em; color: #666; background: #f0f0f0; padding: 15px; border-radius: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Привет! ✨</h1>
+        <p>У меня день рождения 26 сентября, но праздновать мы будем <strong>27-го!</strong></p>
+        <p>Здесь я собрала небольшие подарочки, которые меня очень порадуют. Сейчас свободно {{ available }} из {{ total }}.</p>
+        
+        <a href="{{ url_for('wishlist') }}" class="btn">Открыть вишлист</a>
+
+        <div class="hint">
+            <strong>💡 Подсказка: что можно подарить</strong><br>
+            Если ничего не приглянулось, можно подарить сертификат или просто довериться своей фантазии. Любому сюрпризу я буду рада!
+        </div>
+    </div>
+</body>
+</html>
